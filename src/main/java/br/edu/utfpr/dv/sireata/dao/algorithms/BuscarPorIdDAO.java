@@ -3,10 +3,8 @@ package br.edu.utfpr.dv.sireata.dao.algorithms;
 import java.sql.SQLException;
 import java.util.Set;
 
-import br.edu.utfpr.dv.sireata.model.EntityDAO;
-
-public interface BuscarPorIdDAO {
+public interface BuscarPorIdDAO<T> {
 	
-	public Set<? extends EntityDAO> buscarPorId(int value) throws SQLException;
+	public Set<? extends T> buscarPorId(int value) throws SQLException;
 	
 }
