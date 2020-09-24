@@ -1,79 +1,56 @@
 package br.edu.utfpr.dv.sireata.bo;
 
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import br.edu.utfpr.dv.sireata.dao.AnexoDAO;
+import br.edu.utfpr.dv.sireata.dao.algorithms.anexo.AnexoBuscaPorIdDAO;
+import br.edu.utfpr.dv.sireata.dao.algorithms.anexo.AnexoCarregarObjetoDAO;
+import br.edu.utfpr.dv.sireata.dao.algorithms.anexo.AnexoExcluirDAO;
+import br.edu.utfpr.dv.sireata.dao.algorithms.anexo.AnexoListarPorAtaDAO;
+import br.edu.utfpr.dv.sireata.dao.algorithms.anexo.AnexoSalvarDAO;
 import br.edu.utfpr.dv.sireata.model.Anexo;
 
 public class AnexoBO {
 
-	public Anexo buscarPorId(int id) throws Exception{
-		try{
-			AnexoDAO dao = new AnexoDAO();
-			
-			return dao.buscarPorId(id);
-		}catch(Exception e){
-			Logger.getGlobal().log(Level.SEVERE, e.getMessage(), e);
-			
-			throw new Exception(e.getMessage());
-		}
+	private AnexoDAO anexoDAO;
+
+    public AnexoBO() {
+        anexoDAO = new AnexoDAO(
+                new AnexoBuscaPorIdDAO(),
+                new AnexoCarregarObjetoDAO(),
+                new AnexoExcluirDAO(),
+                new AnexoListarPorAtaDAO(),
+                new AnexoSalvarDAO());
+    }
+
+    public Anexo buscarPorId(int id) throws Exception {
+        return (Anexo) anexoDAO.buscar(id);
+    }
+
+    public List<Anexo> listarPorAta(int idAta) throws Exception {
+        return anexoDAO.listar(idAta);
+    }
+
+    public void validarDados(Anexo anexo) throws Exception {
+        if (anexo.getArquivo() == null) {
+            throw new Exception("Efetue o envio do arquivo.");
+        }
+        if (anexo.getDescricao().isEmpty()) {
+            throw new Exception("Informe a descrição do anexo.");
+        }
+    }
+
+    public int salvar(Anexo anexo) throws Exception {
+        return anexoDAO.salvar(anexo);
+    }
+
+    public void excluir(Anexo anexo) throws Exception {
+        anexoDAO.excluir(anexo.getIdAnexo());
+    }
+
+    public void excluir(int id) throws Exception {
+        anexoDAO.excluir(id);
 	}
-	
-	public List<Anexo> listarPorAta(int idAta) throws Exception{
-		try{
-			AnexoDAO dao = new AnexoDAO();
-			
-			return dao.listarPorAta(idAta);
-		}catch(Exception e){
-			Logger.getGlobal().log(Level.SEVERE, e.getMessage(), e);
-			
-			throw new Exception(e.getMessage());
-		}
-	}
-	
-	public void validarDados(Anexo anexo) throws Exception{
-		if(anexo.getArquivo() == null){
-			throw new Exception("Efetue o envio do arquivo.");
-		}
-		if(anexo.getDescricao().isEmpty()){
-			throw new Exception("Informe a descrição do anexo.");
-		}
-	}
-	
-	public int salvar(Anexo anexo) throws Exception{
-		try{
-			if((anexo.getAta() == null) || (anexo.getAta().getIdAta() == 0)){
-				throw new Exception("Informe a ata.");
-			}
-			
-			this.validarDados(anexo);
-			
-			AnexoDAO dao = new AnexoDAO();
-			
-			return dao.salvar(anexo);
-		}catch(Exception e){
-			Logger.getGlobal().log(Level.SEVERE, e.getMessage(), e);
-			
-			throw new Exception(e.getMessage());
-		}
-	}
-	
-	public void excluir(Anexo anexo) throws Exception{
-		this.excluir(anexo.getIdAnexo());
-	}
-	
-	public void excluir(int id) throws Exception{
-		try{
-			AnexoDAO dao = new AnexoDAO();
-			
-			dao.excluir(id);
-		}catch(Exception e){
-			Logger.getGlobal().log(Level.SEVERE, e.getMessage(), e);
-			
-			throw new Exception(e.getMessage());
-		}
-	}
+
 	
 }

@@ -1,76 +1,52 @@
 package br.edu.utfpr.dv.sireata.bo;
 
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import br.edu.utfpr.dv.sireata.dao.PautaDAO;
+import br.edu.utfpr.dv.sireata.dao.algorithms.pauta.PautaBuscarPorIdDAO;
+import br.edu.utfpr.dv.sireata.dao.algorithms.pauta.PautaCarregarObjetoDAO;
+import br.edu.utfpr.dv.sireata.dao.algorithms.pauta.PautaExcluirDAO;
+import br.edu.utfpr.dv.sireata.dao.algorithms.pauta.PautaListarPorAtaDAO;
+import br.edu.utfpr.dv.sireata.dao.algorithms.pauta.PautaSalvarDAO;
 import br.edu.utfpr.dv.sireata.model.Pauta;
 
 public class PautaBO {
 	
-	public Pauta buscarPorId(int id) throws Exception{
-		try{
-			PautaDAO dao = new PautaDAO();
-			
-			return dao.buscarPorId(id);
-		}catch(Exception e){
-			Logger.getGlobal().log(Level.SEVERE, e.getMessage(), e);
-			
-			throw new Exception(e.getMessage());
-		}
-	}
-	
-	public List<Pauta> listarPorAta(int idAta) throws Exception{
-		try{
-			PautaDAO dao = new PautaDAO();
-			
-			return dao.listarPorAta(idAta);
-		}catch(Exception e){
-			Logger.getGlobal().log(Level.SEVERE, e.getMessage(), e);
-			
-			throw new Exception(e.getMessage());
-		}
-	}
-	
-	public void validarDados(Pauta pauta) throws Exception{
+	private PautaDAO pautaDAO;
+
+    public PautaBO() {
+        pautaDAO = new PautaDAO(
+                new PautaBuscarPorIdDAO(),
+                new PautaCarregarObjetoDAO(),
+                new PautaExcluirDAO(),
+                new PautaListarPorAtaDAO(),
+                new PautaSalvarDAO());
+    }
+
+    public Pauta buscarPorId(int id) throws Exception {
+        return (Pauta) pautaDAO.buscar(id);
+    }
+
+    public List<Pauta> listarPorAta(int idAta) throws Exception {
+        return pautaDAO.listar(idAta);
+    }
+
+    public void validarDados(Pauta pauta) throws Exception{
 		if(pauta.getTitulo().isEmpty()){
 			throw new Exception("Informe o título da pauta.");
 		}
 	}
-	
-	public int salvar(Pauta pauta) throws Exception{
-		try{
-			if((pauta.getAta() == null) || (pauta.getAta().getIdAta() == 0)){
-				throw new Exception("Informe a ata.");
-			}
-			
-			this.validarDados(pauta);
-			
-			PautaDAO dao = new PautaDAO();
-			
-			return dao.salvar(pauta);
-		}catch(Exception e){
-			Logger.getGlobal().log(Level.SEVERE, e.getMessage(), e);
-			
-			throw new Exception(e.getMessage());
-		}
-	}
-	
-	public void excluir(Pauta pauta) throws Exception{
-		this.excluir(pauta.getIdPauta());
-	}
-	
-	public void excluir(int id) throws Exception{
-		try{
-			PautaDAO dao = new PautaDAO();
-			
-			dao.excluir(id);
-		}catch(Exception e){
-			Logger.getGlobal().log(Level.SEVERE, e.getMessage(), e);
-			
-			throw new Exception(e.getMessage());
-		}
+
+    public int salvar(Pauta pauta) throws Exception {
+        return pautaDAO.salvar(pauta);
+    }
+
+    public void excluir(Pauta pauta) throws Exception {
+        pautaDAO.excluir(pauta.getIdPauta());
+    }
+
+    public void excluir(int id) throws Exception {
+        pautaDAO.excluir(id);
 	}
 
 }
